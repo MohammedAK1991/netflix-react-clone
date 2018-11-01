@@ -1,0 +1,31 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-weight: 400;
+  background: #111;
+  color: #FFF;
+  font-family: Avenir;
+}
+
+a, a:active, a:visited, a:focus, a:hover{
+  text-decoration: none;
+  cursor: pointer;
+}
+
+button, button:active, button:visited, button:focus, button:hover{
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+input, input:active, input:visited, input:focus{
+  outline: none;
+}
+
+::-webkit-scrollbar{
+  display: none;
+}
+
+input:-webkit-autofill{
+  -webkit-box-shadow: 0 0 0 50px white inset,
+}

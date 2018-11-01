@@ -1,0 +1,36 @@
+{
+  "name": "codeworks-netflix-react-exercise-master",
+  "version": "0.0.0",
+  "description": "A Codeworks exercise to train students",
+  "main": "index.js",
+  "scripts": {
+    "precommit": "gulp lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codeworksbcn/netflix-react-exercise-master.git"
+  },
+  "author": "Codeworks",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/codeworksbcn/netflix-react-exercise-master/issues"
+  },
+  "homepage": "https://github.com/codeworksbcn/netflix-react-exercise-master#readme",
+  "devDependencies": {
+    "cz-changelog": "1.0.1",
+    "del": "3.0.0",
+    "eslint": "5.8.0",
+    "eslint-plugin-json": "1.2.1",
+    "eslint-plugin-react": "7.11.1",
+    "gulp": "3.9.1",
+    "gulp-eslint": "5.0.0",
+    "gulp-load-plugins": "1.5.0",
+    "gulp-replace": "1.0.0",
+    "husky": "1.1.2"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-changelog"
+    }
+  }
+}
