@@ -5,6 +5,10 @@
   margin-right: 10px;
 }
 
+.movie_container:hover .movie_headline {
+  display: flex;
+}
+
 .movie_img{
   width: 300px;
 }
@@ -14,10 +18,10 @@
   height: 65px;
   position: relative;
   margin-top: -69px;
-  display: flex;
+  display: none;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(to bottom, #0000 0%, #000D 100%);;
+  background: linear-gradient(to bottom, #0000 0%, #000D 100%);
   box-sizing: border-box;
   padding: 0 10px;
 }
