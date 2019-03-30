@@ -1,75 +1,71 @@
-import React, { Component } from 'react';
-
-import { connect } from 'react-redux';
-import { updateMovies, setCategories, updateMyList, updateFetchStatus } from './Redux/actions';
+import React, { useState, useEffect } from 'react';
 
 import Navbar from './Components/Navbar';
 import MovieList from './Components/MovieList';
 import Spinner from './Components/Spinner';
 
+import ApiClient from './Services/ApiClient';
+
 import './App.css';
 
-class App extends Component {
-  constructor (props) {
-    super(props);
-    this.fetchMovies();
-    this.fetchCategories();
+export const MovieContext = React.createContext(null); 
+
+const App = () => {
+  const [status, setStatus] = useState(true);
+  const [movies, setMovies] = useState({});
+  const [lists, setLists] = useState({myList:[]});
+  
+  const updateState = (name, list) => {
+    setMovies(movies => list.reduce((acc,mov) => ({
+      ...acc,
+      [mov.id]: Object.assign(mov, { mylist: false })
+    }), movies));
+    setLists(lists => ({...lists, [name]: list.map(mov => mov.id)}));
   }
 
-  fetchCategories () {
-    this.props.updateFetchStatus(false);
-    fetch('https://movied.herokuapp.com/categories')
-      .then(data => data.json())
-      .then(movies => this.props.setCategories(movies))
-      .then(() => Promise.all(Object.keys(this.props.categories).map(id => {
-        return fetch(`https://movied.herokuapp.com/categories/${id}`)
-          .then(data => data.json())
-          .then(movies => this.props.updateMovies(movies, this.props.categories[id].name));
-      })).then(()=>this.props.updateFetchStatus(true)));
+  const addMyList = (id) => {
+    setLists((lists) => ({
+      ...lists,
+      myList: lists.myList.includes(id)
+      ? lists.myList.filter(myId=> myId !== id)
+      : [...lists.myList, id]
+    }))
+    setMovies(movies => ({
+      ...movies,
+      [id]: Object.assign(movies[id], { mylist: !movies[id].mylist })
+    }))
   }
 
-  fetchMovies () {
-    fetch('https://movied.herokuapp.com/discover')
-      .then(data => data.json())
-      .then(movies => this.props.updateMovies(movies, 'Discover'));
-  }
+  useEffect(() => {
+    ApiClient.getDiscoverMovies()
+      .then(newMovies => updateState('discover', newMovies));
 
-  render () {
-    const { categoriesLists, movies, fetchStatus } = this.props;
-    return (
+    ApiClient.getCategories()
+      .then(categories => Promise.all(categories.map(({ id, name }) => 
+        ApiClient.getMoviesFromCategory(id)
+          .then(newMovies => updateState(name, newMovies)))))
+          .then(()=> setStatus(false));
+  }, []);
+
+  return (
+    <div className="App_dashboard">
       <div className="App">
-        <Navbar/>
-        {fetchStatus
-          ? <div className="App_dashboard">
-            {Object.keys(categoriesLists).map(cat =>
+        <MovieContext.Provider value={{addMyList}}> 
+          <Navbar/>
+          { !status 
+            ? Object.keys(lists).map(cat =>
               <MovieList
                 key={cat}
-                handleClick={(movie) => this.props.updateMyList(movie.id)}
-                movies={categoriesLists[cat].map(id => movies[id])}
-                title={cat}/>
-            )}
-          </div>
-          : <div className="App_loader">
-            <Spinner/>
-          </div>
-        }
+                handleClick={(movie) => console.log(movie)}
+                movies={lists[cat].map(id => movies[id])}
+                title={cat}/> )
+            : <div className="App_loader">
+              <Spinner/>
+            </div> }
+        </MovieContext.Provider>
       </div>
-    );
-  }
+    </div>
+  )
 }
 
-const mapStateToProps = (state) => ({
-  categoriesLists: state.pages.boxOffice.categoriesLists,
-  fetchStatus: state.pages.boxOffice.fetching,
-  movies: state.entities.movies,
-  categories: state.entities.categories,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  updateMovies: (data, list) => dispatch(updateMovies(data, list)),
-  updateMyList: (data) => dispatch(updateMyList(data)),
-  setCategories: (data) => dispatch(setCategories(data)),
-  updateFetchStatus: (data) => dispatch(updateFetchStatus(data)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default App;
