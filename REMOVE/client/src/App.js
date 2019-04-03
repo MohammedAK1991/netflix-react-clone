@@ -56,7 +56,6 @@ const App = () => {
             ? Object.keys(lists).map(cat =>
               <MovieList
                 key={cat}
-                handleClick={(movie) => console.log(movie)}
                 movies={lists[cat].map(id => movies[id])}
                 title={cat}/> )
             : <div className="App_loader">
