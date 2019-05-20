@@ -1,6 +1,6 @@
 {
   "name": "codeworks-netflix-react-exercise-master",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A Codeworks exercise to train students",
   "main": "index.js",
   "scripts": {
