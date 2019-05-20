@@ -16,25 +16,36 @@ function addDefSrcIgnore (srcArr) {
 }
 
 // JavaScript and JSON linter
-gulp.task('lint', function () {
-  return gulp.src(addDefSrcIgnore(['**/*.js', '*.json']), {dot: true})
+function lint () {
+  return gulp.src(addDefSrcIgnore(['**/*.js', '**/*.json']), {dot: true})
     .pipe($.eslint({dotfiles: true}))
     .pipe($.eslint.format())
     .pipe($.eslint.failAfterError());
-});
+}
 
 // Remove solutions from exercises
-gulp.task('remove-solutions', function () {
+function removeSolutions () {
   del.sync('dist');
   return gulp.src(addDefSrcIgnore(['**', '!**/REMOVE{,/**}']), {dot: true})
     .pipe($.replace(/^\s*(\/\/|<!--|\/\*)\s*REMOVE-START[\s\S]*?REMOVE-END\s*(\*\/|-->)?\s*$/gm, ''))
     .pipe(gulp.dest('dist'));
-});
+}
 
 // Prepare for distribution to students
-gulp.task('dist', ['lint', 'remove-solutions'], function () {
+function updateConfigForSlave (done) {
   let npmConfig = require('./package.json');
-  delete npmConfig.scripts.install;
+  delete npmConfig.scripts;
   npmConfig = JSON.stringify(npmConfig, null, 2).replace(/-master/g, '');
   fs.writeFileSync('dist/package.json', npmConfig);
-});
+
+  done();
+}
+
+// Lint all files
+exports.lint = lint;
+
+// Prepare for distribution to students
+exports.dist = gulp.series(
+  removeSolutions,
+  updateConfigForSlave
+);
