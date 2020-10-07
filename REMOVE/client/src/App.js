@@ -8,13 +8,13 @@ import ApiClient from './Services/ApiClient';
 
 import './App.css';
 
-export const MovieContext = React.createContext(null); 
+export const MovieContext = React.createContext(null);
 
 const App = () => {
   const [status, setStatus] = useState(true);
   const [movies, setMovies] = useState({});
   const [lists, setLists] = useState({myList:[]});
-  
+
   const updateState = (name, list) => {
     setMovies(movies => list.reduce((acc,mov) => ({
       ...acc,
@@ -41,7 +41,7 @@ const App = () => {
       .then(newMovies => updateState('discover', newMovies));
 
     ApiClient.getCategories()
-      .then(categories => Promise.all(categories.map(({ id, name }) => 
+      .then(categories => Promise.all(categories.map(({ id, name }) =>
         ApiClient.getMoviesFromCategory(id)
           .then(newMovies => updateState(name, newMovies)))))
           .then(()=> setStatus(false));
@@ -50,9 +50,9 @@ const App = () => {
   return (
     <div className="App_dashboard">
       <div className="App">
-        <MovieContext.Provider value={{addMyList}}> 
+        <MovieContext.Provider value={{addMyList}}>
           <Navbar/>
-          { !status 
+          { !status
             ? Object.keys(lists).map(cat =>
               <MovieList
                 key={cat}
